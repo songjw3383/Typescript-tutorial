@@ -241,7 +241,7 @@ function hello(name="world") {
 
 -  하지만 먼저 optional 매개변수가 오고, 그 뒤에 명시적 타입의 매개변수가 오는 경우는, 단순히 위치만 바꾸는게 아닌
 ```javascript
-( age?:number , name: string)
+( age?:number , name: string)	// ERROR
 ```
 보다 명확하게 underfined 적어주어 명시해줘야 에러가 안난다.
 ```javascript
@@ -253,7 +253,7 @@ console.log(hello(undefined, "Sam")
 
 #### 나머지 타입 매개변수 작성법
 ```javascript
-function add(...nums: number[]) {							// ...nums 는 매개변수를 배열형태로 나타내는 것을 의미.
+function add(...nums: number[]) {				// ...nums 는 매개변수를 배열형태로 나타내는 것을 의미.
 	return nums.reduce((result, num) => result + num, 0);	// 이것또한 :number[] 를 붙여주어 정확한 배열타입을 명시해줘야 에러가 안난다.
 }
 
@@ -270,7 +270,7 @@ interface User {  // 인터페이스는 User
 const Sam: User = {name: 'Sam'} //Sam은 User interface 형식을 따름
 
 function showName(this:User, age: number, gender:'m' | 'f'){		// this.name을 출력하기 위해선 this에 대한 타입을 명시해줘야 된다.
-	console.log(this.name, age, gender)		    					// 여기선 this:User 로 명시, 또한 this의 타입 선언은 매개변수에서 첫번째에서 해줘야 한다.
+	console.log(this.name, age, gender)		    		// 여기선 this:User 로 명시, 또한 this의 타입 선언은 매개변수에서 첫번째에서 해줘야 한다.
 }
 
 const a = showName.bind(Sam);
