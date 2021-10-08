@@ -253,11 +253,11 @@ console.log(hello(undefined, "Sam")
 
 #### 나머지 타입 매개변수 작성법
 ```javascript
-function add(...nums: number[]) {							// ...nums 는 매개변수를 배열형태로 나타내는 것을 의미.
+function add(...nums: number[]) {				// ...nums 는 매개변수를 배열형태로 나타내는 것을 의미.
 	return nums.reduce((result, num) => result + num, 0);	// 이것또한 :number[] 를 붙여주어 정확한 배열타입을 명시해줘야 에러가 안난다.
 }
 
-add(1,2,3);			//6
+add(1,2,3);		//6
 add(1,2,3,4,5,6)	//55
 ```
 
@@ -270,11 +270,11 @@ interface User {  // 인터페이스는 User
 const Sam: User = {name: 'Sam'} //Sam은 User interface 형식을 따름
 
 function showName(this:User, age: number, gender:'m' | 'f'){		// this.name을 출력하기 위해선 this에 대한 타입을 명시해줘야 된다.
-	console.log(this.name, age, gender)		    					// 여기선 this:User 로 명시, 또한 this의 타입 선언은 매개변수에서 첫번째에서 해줘야 한다.
+	console.log(this.name, age, gender)		    		// 여기선 this:User 로 명시, 또한 this의 타입 선언은 매개변수에서 첫번째에서 해줘야 한다.
 }
 
 const a = showName.bind(Sam);
-a(30, 'm')		// this:User 이후에 age 와 gender 타입에 해당되는 매개변수이다.
+a(30, 'm')								// this:User 이후에 age 와 gender 타입에 해당되는 매개변수이다.
 ```
 
 #### 함수 오버로드 
@@ -321,7 +321,7 @@ type Job = "police" | "developer" | "teacher";	 //Job 의 타입은 3 가지
 
 interface User {
 	name: string;
-	job: Job;									//Job의 value는 Job의 속성
+	job: Job;				//Job의 value는 Job의 속성
 }
 
 const user: User = {
@@ -375,8 +375,8 @@ interface Toy {
 	price: number;
 }
 
-const toyCar: Toy & Car = {		// Toy 와 Car 타입 둘다 사용한다를 의미
-	name: "타요",				// 그러므로 Car 와 Toy 의 속성을 모두 적어줘야만 에러가 안난다.
+const toyCar: Toy & Car = {		  // Toy 와 Car 타입 둘다 사용한다를 의미
+	name: "타요",			// 그러므로 Car 와 Toy 의 속성을 모두 적어줘야만 에러가 안난다.
 	start() {},
 	color: "blue",
 	price: 1000,
@@ -388,7 +388,7 @@ const toyCar: Toy & Car = {		// Toy 와 Car 타입 둘다 사용한다를 의미
 예시)
 ```javascript
 class Car {
-	color: string;		// 멤버변수를 미리 선언해야한다. 여기선 color : string (멤버변수 선언 방법)
+	color: string;					// 멤버변수를 미리 선언해야한다. 여기선 color : string (멤버변수 선언 방법)
 	constructor(color: string) {      
   //constructor(public color:string {			// 아니면 constructor 내의 color : string 앞에 public 이나 readonly를 적어줘도 됨.
 		this.color = color; // ( 접근 제한자 방법 )
@@ -435,16 +435,16 @@ abstract class Car {
 		console.log("start");
 	}
 	abstract doSomething():void;		// 추상 클래스 내부의 추상 메소드는 상속받는 클래스에서 구체적이게 정의해줘야 함.
-}										// 여기선 단순히 함수명과 반환타입만 기재하면 된다.
+}						// 여기선 단순히 함수명과 반환타입만 기재하면 된다.
 
-// const car = new Car("red");		// Error; new를 사용할 수 없다.
+// const car = new Car("red");			// Error; new를 사용할 수 없다.
 
 class Bmw extends car {
 	constructor(color: string) {
 		super(color);
 	}
 	doSomething(){			// 추상 메소드의 이름은 같지만 구체적인 기능은 상속 받은 클래스마다 다르게 정의 될 것 이다.
-		alert(3);			// Bmw 클래스 내부의 doSomething() 은 alert(3) 을 실행하는 기능이 정의 되어있다.
+		alert(3);		// Bmw 클래스 내부의 doSomething() 은 alert(3) 을 실행하는 기능이 정의 되어있다.
 	}
 }
 ```
@@ -455,28 +455,28 @@ class Bmw extends car {
 예시 ) 일반적 교차 타입을 사용
 
 ```javascript
-function getSize(arr: number[]): number {		//getSize함수는 arr.length를 number type으로 반환
+function getSize(arr: number[]): number {			//getSize함수는 arr.length를 number type으로 반환
 	return arr.length;
 }
 
-const arr1 = [1,2,3];							// array는 number[] 타입으로 설정해줘서 에러가 없다.
+const arr1 = [1,2,3];						// array는 number[] 타입으로 설정해줘서 에러가 없다.
 getSize(arr1);
 
-const arr2 = ["a","b","c"];						// arr2 는 string 배열 타입
-getSize(arr2);									// getSize(arr: number[] | string[] ) 으로 표시 해줘야됨 (교차 타입)
+const arr2 = ["a","b","c"];					// arr2 는 string 배열 타입
+getSize(arr2);							// getSize(arr: number[] | string[] ) 으로 표시 해줘야됨 (교차 타입)
 ```
 
 예시 ) 1. 제네릭 사용 - 함수 예시
 ```javascript
 function getSize<T>(arr : T[] ) : number {		// <T> 를 해주고 (arr : T[]), 즉 arr는 T타입의 배열 
-	return arr.length;							// T는 사용하는 쪽에서 타입을 정해줘야 한다.
+	return arr.length;				// T는 사용하는 쪽에서 타입을 정해줘야 한다.
 }
 
 const arr1 = [1,2,3];
 getSize<number>(arr1);				// getSize<number>(arr1); 즉 arr1 배열은 number 타입의 배열이다. 를 getSize() 함수에 전달
 
-const arr2 = ["a", "b", "c"];				// Javascript 에선 안적어줘도 전달되는 매개변수의 타입이 무었인지 함수에 자동으로 전달해준다.
-getSize(arr2);								// == getSize<string>(arr2) 
+const arr2 = ["a", "b", "c"];			// Javascript 에선 안적어줘도 전달되는 매개변수의 타입이 무었인지 함수에 자동으로 전달해준다.
+getSize(arr2);					// == getSize<string>(arr2) 
 ```
 
 예시 ) 2. 제네릭 사용 - 인터페이스 예시 
@@ -515,7 +515,7 @@ interface User {
 }
 
 type UserKey = keyof User;			// 'id' | 'name' | 'age' | 'gender' 와 같다.
-									// 즉 User 인터페이스의 키 값들을 유니온 형태로 받을 수 있다 	
+						// 즉 User 인터페이스의 키 값들을 유니온 형태로 받을 수 있다 	
 const uk:UserKey = "name"
 ```
 
@@ -530,9 +530,9 @@ interface User {
 }
 
 let admin: Partial<User> = {			// admin에서 User를 Partial로 받게 되면, User내부의 속성들은 모두 optinal property로 받아오게된다.
-	id: 1,								// id?, name?, age?, gender? 형태
+	id: 1,					// id?, name?, age?, gender? 형태
 	name: "Bob",
- // job: ""								// Error) job은 User 인터페이스 속성에 있지 않으므로 에러가 난다.
+ // job: ""					// Error) job은 User 인터페이스 속성에 있지 않으므로 에러가 난다.
 };
 ```
 
@@ -579,7 +579,7 @@ interface User {
 
 function isValid(user: User) {
 	const result: Record<keyof User, boolean> = {		// Record의 Key값은 keyof로 User의 키값을 유니온 형태로 받아온다.
-		id: user.id > 0,								// Value값은 boolean 형태로 설정
+		id: user.id > 0,				// Value값은 boolean 형태로 설정
 		name: user.name !== "",
 		age: user.age > 0,
 	};
@@ -600,7 +600,7 @@ interface User {
 	gender: "M" | "W";
 }
 
-const admin: Pick<User, "id" | "name"> = {			// User 인터페이스에서 id와 name 의 Key값만을 사용하겠다는것을 의미.
+const admin: Pick<User, "id" | "name"> = {		// User 인터페이스에서 id와 name 의 Key값만을 사용하겠다는것을 의미.
 	id: 0,
 	name: "Bob",
 };
