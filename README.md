@@ -241,7 +241,7 @@ function hello(name="world") {
 
 -  하지만 먼저 optional 매개변수가 오고, 그 뒤에 명시적 타입의 매개변수가 오는 경우는, 단순히 위치만 바꾸는게 아닌
 ```javascript
-( age?:number , name: string)	// ERROR
+( age?:number , name: string)
 ```
 보다 명확하게 underfined 적어주어 명시해줘야 에러가 안난다.
 ```javascript
@@ -253,7 +253,7 @@ console.log(hello(undefined, "Sam")
 
 #### 나머지 타입 매개변수 작성법
 ```javascript
-function add(...nums: number[]) {				// ...nums 는 매개변수를 배열형태로 나타내는 것을 의미.
+function add(...nums: number[]) {							// ...nums 는 매개변수를 배열형태로 나타내는 것을 의미.
 	return nums.reduce((result, num) => result + num, 0);	// 이것또한 :number[] 를 붙여주어 정확한 배열타입을 명시해줘야 에러가 안난다.
 }
 
@@ -270,7 +270,7 @@ interface User {  // 인터페이스는 User
 const Sam: User = {name: 'Sam'} //Sam은 User interface 형식을 따름
 
 function showName(this:User, age: number, gender:'m' | 'f'){		// this.name을 출력하기 위해선 this에 대한 타입을 명시해줘야 된다.
-	console.log(this.name, age, gender)		    		// 여기선 this:User 로 명시, 또한 this의 타입 선언은 매개변수에서 첫번째에서 해줘야 한다.
+	console.log(this.name, age, gender)		    					// 여기선 this:User 로 명시, 또한 this의 타입 선언은 매개변수에서 첫번째에서 해줘야 한다.
 }
 
 const a = showName.bind(Sam);
@@ -305,3 +305,326 @@ function join(name: string, age: number | string): User | string {
 // 즉, 매개변수의 타입이나 갯수에 따라 다른방식으로 동작할때 오버로드 해줘야 함  
 ```
 > 위 함수를 기존 join함수 위에 작성해주면 된다.
+
+
+## 리터럴 타입
+
+예시 1 )
+```javascript
+const userName1 = "Bob";	// Bob 외의 값은 받을 수 없다. 이런 경우 문자열 리터럴 타입 이라고 한다.
+let userName2 = "Tom"		// userName2 는 let이므로 string type 아무거나 가능.
+```
+
+예시 2 )
+```javascript
+type Job = "police" | "developer" | "teacher";	 //Job 의 타입은 3 가지
+
+interface User {
+	name: string;
+	job: Job;									//Job의 value는 Job의 속성
+}
+
+const user: User = {
+	name : "Bob",
+	job: "teacher" 	// 여기서 job 속성은 위에 정의된 3개의 Job 속성중에서만 선택할 수 있다.
+}
+```
+
+#### 식별 가능한 유니온 타입 ( Union Type , A or B )
+
+예시 1 )
+```javascript
+
+interface Car {
+	name: "car";		// 동일한 name속성 이지만 다른 타입을 줌으로써 interface를 식별
+	color: string;		// 여기서는 name속성의 타입은 car
+	start(): void;
+}
+
+interface Mobile {
+	name: "mobile";		// 여기서는 name속성의 타입은 mobile
+	color: string;
+	call(): void;
+}
+
+function getGift(gift: Car | Mobile) {
+	console.log(gift.color);	// color속성은 둘다 string타입으로 정의 되었으므로 출력가능.
+
+	// ex) gift.start();		// Error) start()는 Car인터페이스 내부에만 있으므로 아래와 같이 조건문으로 구분해줘야 함.
+
+	if(gift.name === "car"){	// gift.name 이 car 이면 gift.start() 실행 , 아니면 gift.call() 실행
+		gift.start();
+	} else {
+		gift.call();
+	}
+}
+```
+
+#### 교차 타입 ( Intersection Type , A and B )
+
+예시 1 )
+```javascript
+interface Car {
+	name: string;
+	start(): void;
+}
+
+interface Toy {
+	name: string;
+	color: string;
+	price: number;
+}
+
+const toyCar: Toy & Car = {		// Toy 와 Car 타입 둘다 사용한다를 의미
+	name: "타요",				// 그러므로 Car 와 Toy 의 속성을 모두 적어줘야만 에러가 안난다.
+	start() {},
+	color: "blue",
+	price: 1000,
+};
+```
+
+## 클래스 선언
+
+예시)
+```javascript
+class Car {
+	color: string;		// 멤버변수를 미리 선언해야한다. 여기선 color : string (멤버변수 선언 방법)
+	constructor(color: string) {      
+  //constructor(public color:string {			// 아니면 constructor 내의 color : string 앞에 public 이나 readonly를 적어줘도 됨.
+		this.color = color; // ( 접근 제한자 방법 )
+	}
+	start() {
+		console.log("start");
+	}
+}
+
+const bmw = new Car("red");
+```
+
+#### 접근 제한자 ( public, private, protected )
+
+1. public - 자식 클래스 , 클래스 인스턴스 모두 접근이 가능
+2. protected - 자식 클래스 내부에서는 참조 가능, 하지만 클래스 인스턴스에선 사용 불가
+3. private ( 앞에 # 표기 ) - 해당 클래스 내부에서만 접근 가능 , 자식 클래스에서는 사용 불가
+4. readonly - 수정, 변경 불가
+
+#### 정적 선언 ( static )
+- 앞에 static 이 붙여진 정적 멤버변수나 메소드는 this. 로 접근하는게 아닌, 클래스명. 으로 접근해야 한다.
+
+```javascript
+class Car {
+	static wheels = 4 ;
+}
+
+console.log(this.wheels);	// X
+console.log(Car.wheels);	// O
+```
+
+#### 추상 클래스 ( abstract )
+- 클래스 앞에 abstract를 붙여주어 추상 클래스로 만들어 줄 수 있다.
+- 추상된 클래스는 new를 사용할 수 없고, **상속**에 의해서는 사용 될 수 있다.
+
+예시 )
+```javascript
+abstract class Car {
+	color: string;
+	constructor(color: string) {
+		this.color = color;
+	}
+	start() {
+		console.log("start");
+	}
+	abstract doSomething():void;		// 추상 클래스 내부의 추상 메소드는 상속받는 클래스에서 구체적이게 정의해줘야 함.
+}										// 여기선 단순히 함수명과 반환타입만 기재하면 된다.
+
+// const car = new Car("red");		// Error; new를 사용할 수 없다.
+
+class Bmw extends car {
+	constructor(color: string) {
+		super(color);
+	}
+	doSomething(){			// 추상 메소드의 이름은 같지만 구체적인 기능은 상속 받은 클래스마다 다르게 정의 될 것 이다.
+		alert(3);			// Bmw 클래스 내부의 doSomething() 은 alert(3) 을 실행하는 기능이 정의 되어있다.
+	}
+}
+```
+
+## 제네릭 ( generic )
+- 제네릭은 클래스, 인터페이스 그리고 함수 등을 다양한 타입으로 재사용 가능하게 한다.
+
+예시 ) 일반적 교차 타입을 사용
+
+```javascript
+function getSize(arr: number[]): number {		//getSize함수는 arr.length를 number type으로 반환
+	return arr.length;
+}
+
+const arr1 = [1,2,3];							// array는 number[] 타입으로 설정해줘서 에러가 없다.
+getSize(arr1);
+
+const arr2 = ["a","b","c"];						// arr2 는 string 배열 타입
+getSize(arr2);									// getSize(arr: number[] | string[] ) 으로 표시 해줘야됨 (교차 타입)
+```
+
+예시 ) 1. 제네릭 사용 - 함수 예시
+```javascript
+function getSize<T>(arr : T[] ) : number {		// <T> 를 해주고 (arr : T[]), 즉 arr는 T타입의 배열 
+	return arr.length;							// T는 사용하는 쪽에서 타입을 정해줘야 한다.
+}
+
+const arr1 = [1,2,3];
+getSize<number>(arr1);				// getSize<number>(arr1); 즉 arr1 배열은 number 타입의 배열이다. 를 getSize() 함수에 전달
+
+const arr2 = ["a", "b", "c"];				// Javascript 에선 안적어줘도 전달되는 매개변수의 타입이 무었인지 함수에 자동으로 전달해준다.
+getSize(arr2);								// == getSize<string>(arr2) 
+```
+
+예시 ) 2. 제네릭 사용 - 인터페이스 예시 
+```javascript
+interface Mobile<T> {
+	name: string;
+	price: number;
+	option: T;				// option 의 타입이 정해지지 않아 T로 설정 
+}
+
+const m1: Mobile<object> = {	// m1 의 option 타입은 object이므로 T 타입은 object로 전달 된다.		
+	name: "s21",				// 아니면, object 내부의 타입이 정해져 있다고 하면,
+	price: 1000,				// <{color: string; coupon: boolean }> 이렇게 전달 해 줘도 된다.
+	option: {
+		color: "red",
+		coupon: false,
+	},
+}
+
+const m2: Mobile<string> = {	// m2의 option 타입은 string이므로 T 타입은 string으로 전달 된다.
+	name: "s20",
+	price: 900,
+	option: "good",
+};
+```
+
+## 유틸리티 타입
+
+#### 1. keyof
+```javascript
+interface User {
+	id: number;
+	name: string;
+	age: number;
+	gender: "m" | "f";
+}
+
+type UserKey = keyof User;			// 'id' | 'name' | 'age' | 'gender' 와 같다.
+									// 즉 User 인터페이스의 키 값들을 유니온 형태로 받을 수 있다 	
+const uk:UserKey = "name"
+```
+
+#### 2. Partial< T >
+- 속성들을 모두 optional로 바꿔준다.
+```javascript
+interface User {
+	id: number;
+	name: string;
+	age: number;
+	gender: "m" | "f";
+}
+
+let admin: Partial<User> = {			// admin에서 User를 Partial로 받게 되면, User내부의 속성들은 모두 optinal property로 받아오게된다.
+	id: 1,								// id?, name?, age?, gender? 형태
+	name: "Bob",
+ // job: ""								// Error) job은 User 인터페이스 속성에 있지 않으므로 에러가 난다.
+};
+```
+
+#### 3.Required < T >
+- optional property 를 필수 property 로 만드는 것.
+```javascript
+interface User {
+	id: number;
+	age? : number;
+}
+
+let admin: Required<User> = {		// Required 로 User를 감싸주면, optional property인 age? 를 무조건 써줘야 에러가 안난다.
+	id: 1,
+	age : 30
+}
+```
+
+#### 4.Readonly < T >
+- 처음 인터페이스 속성 할당만 가능, 그 이후에 수정은 불가능
+
+#### 5.Record < K, T >
+- K는 Key, T는 Type
+
+예시) 1. 기본 Record 활용
+```javascript 
+type Grade = "1" | "2" | "3" ;
+type Score = "A" | "B" | "C" ;
+
+const score: Record<Grade, Score> = {		// Record를 활용하여 Key 값은 Grade, Value 값은 Score로 지정해 줄 수 있다. 
+	1: "A",
+	2: "C",
+	3: "B",
+	4: "D",
+};
+```
+
+예시) 2. Record 와 keyof 혼용
+```javascript
+interface User {
+	id: number;
+	name: string;
+	age: number;
+}
+
+function isValid(user: User) {
+	const result: Record<keyof User, boolean> = {		// Record의 Key값은 keyof로 User의 키값을 유니온 형태로 받아온다.
+		id: user.id > 0,								// Value값은 boolean 형태로 설정
+		name: user.name !== "",
+		age: user.age > 0,
+	};
+	return result;
+}
+```
+
+#### 6.Pick< T, K > 와 Omit < T, K >
+- Pick은 T 내에서 Key 값을 선택하여 사용할 수 있는 기능
+- Omit 은 T 내에서 Key 값을 배제 하여 사용할 수 있는 기능
+
+예시 )
+```javascript
+interface User {
+	id: number;
+	name: string;
+	age: number;
+	gender: "M" | "W";
+}
+
+const admin: Pick<User, "id" | "name"> = {			// User 인터페이스에서 id와 name 의 Key값만을 사용하겠다는것을 의미.
+	id: 0,
+	name: "Bob",
+};
+
+const admin: Omit<User, "age" | "gender"> = {} 		// User 인터페이스에서 age와 gender 의 Key값은 배제하고 나머지를 사용하겠다는 것을 의미
+```
+
+#### 7.Exclude<T1, T2>
+- T1 에서 T2 를 제외하고 사용하는 것을 의미. 즉, T1 의 타입들 중에서 T2 타입과 겹치는 것을 제외 시킨다.
+
+예시 )
+```javascript
+type T1 = string | number;
+type T2 = Exclude<T1, number>
+// T1의 number와 겹치므로 제거. 결론적으로 type T2 = string 타입이 된다.
+```
+
+#### 8.NonNullable< Type >
+- Null 과 Undefined 를 함께 제외 시킨다.
+
+예시)
+```javascript
+type T1 = string | null | undefined | void;
+type T2 = NonNullable<T1>
+// T2는 NonNullable로 T1을 받아오므로 null 과 undefined를 제외한 string과 void만 받아옴.
+// 즉, type T2 = string | void
+```
