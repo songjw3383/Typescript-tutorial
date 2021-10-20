@@ -122,7 +122,7 @@ let user : User = {
 type Score = 'A' | 'B' | 'C' | 'D' // Score type은 A,B,C,D 만을 받겠다는 의미
 ```
 
-최종 예시)
+예시)
 ```javascript
 type Score = 'A' | 'B' | 'C' | 'F'; // Score type (리터럴 타입)
 
@@ -332,7 +332,7 @@ const user: User = {
 
 #### 식별 가능한 유니온 타입 ( Union Type , A or B )
 
-예시 1 )
+예시 )
 ```javascript
 
 interface Car {
@@ -362,7 +362,7 @@ function getGift(gift: Car | Mobile) {
 
 #### 교차 타입 ( Intersection Type , A and B )
 
-예시 1 )
+예시 )
 ```javascript
 interface Car {
 	name: string;
